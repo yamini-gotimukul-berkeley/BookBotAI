@@ -2,7 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { defaultSystem } from "@chakra-ui/react"
 import { Theme } from "@chakra-ui/react"
 import Header from "./components/Header";
-import SearchBooks from "./components/SearchBooks.tsx";
+import SearchForm from "./components/SearchForm.tsx";
 
 function App() {
 
@@ -10,7 +10,7 @@ function App() {
     <ChakraProvider value={defaultSystem}>
         <Theme appearance="light">  
           <Header />
-          <SearchBooks />
+          <SearchForm />
         </Theme>      
     </ChakraProvider>
   )

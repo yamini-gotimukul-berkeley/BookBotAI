@@ -1,5 +1,4 @@
-import React from "react";
-import { Heading, Flex, Separator } from "@chakra-ui/react";
+import { Heading, Flex } from "@chakra-ui/react";
 import bground from "../assets/Banner.png";
 
 const Header = () => {

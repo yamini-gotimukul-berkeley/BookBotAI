@@ -103,7 +103,7 @@ def get_book_summary(book_name, authors):
     prompt = f"Please provide a brief summary for the book with title {book_name} written by {author}"
     
     response = openai.chat.completions.create(
-        model = "gpt-4",
+        model = "gpt-3.5-turbo",
         messages = [
             {
                 "role": "user", "content": prompt
@@ -111,7 +111,7 @@ def get_book_summary(book_name, authors):
         ]
     )
     summary = response.choices[0].message.content.strip()
-    
+    summary_es = re.sub('\\W+', '', summary.strip())
     logger.info(f"Books Summary {summary}")
     return summary;
 
@@ -180,16 +180,22 @@ def search_books_by_query(query, limit):
     data = fetch_books_data(build_api_endpoint(query, limit))
     books = data["docs"]
     
-    logger.info(f"Book detail {books[0]}")
     logger.info(f"Size {len(books)}")
     
     for book in books:
+        book["id"] = books.index(book)
+        authors=[]
+        if("author_name" in book):
+            authors = book["author_name"]
+        if("title" in book):
+            book["summary"] = get_book_summary(book["title"], authors)
+        else:
+            book["summary"] = "Summary not available"
+         
         if("cover_i" in book):
-            book["cover_image_url"]="https://covers.openlibrary.org/b/id/"+str(book["cover_i"])+"-M.jpg"
+            book["cover_image_url"]="https://covers.openlibrary.org/b/id/"+str(book["cover_i"])+"-L.jpg"
         else:
             book["cover_image_url"]="https://covers.openlibrary.org/b/id/nocover-M.jpg"
-
-    logger.info(f"Book detail {books[0]}")
     
     return books
 
@@ -214,8 +220,10 @@ async def add_book(book: dict) -> dict:
 async def summarize_books(request: Request):
     logger.info("Summarizing books ..")
     req = await request.json()
+    logger.info(f"Title: {req["title"]}")
+    logger.info(f"Authors: {req["authors"]}")
     return {
-        "summary": get_book_summary(req["title"], req["authors"] )
+       "summary":get_book_summary(req["title"], req["authors"] )
     }    
 
 @sleep_and_retry
